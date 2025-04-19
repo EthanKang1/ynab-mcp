@@ -1,5 +1,5 @@
 import os
-from typing import Any
+from typing import Any, Optional
 
 from mcp.types import ImageContent, TextContent, Tool
 
@@ -80,19 +80,51 @@ class GetBudgetTool():
                     "budget_id": {
                         "type": "string",
                         "description": "The ID of the budget to fetch"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "description": "Start date in YYYY-MM-DD format (client-side filter)",
+                        "default": "current_month_start"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "description": "End date in YYYY-MM-DD format (client-side filter)",
+                        "default": "current_month_end"
                     }
                 },
                 "required": ["budget_id"]
             },
         )
     
-    async def call(self, budget_id: str) -> list[TextContent]:
+    async def call(self, budget_id: str, start_date: Optional[str] = None, end_date: Optional[str] = None) -> list[TextContent]:
         await client.connect()
         try:
             result = await client.get_budget(budget_id)
+            budget = result['data']['budget']
+            
+            # Extract essential info
+            essential_info = {
+                'id': budget['id'],
+                'name': budget['name'],
+                'currency_format': budget.get('currency_format', {}),
+                'time_period': f"{start_date or 'start'} to {end_date or 'end'}"
+            }
+            
+            # Client-side time filtering of transactions
+            if 'transactions' in budget:
+                filtered_transactions = [
+                    t for t in budget['transactions']
+                    if (not start_date or t['date'] >= start_date) and
+                       (not end_date or t['date'] <= end_date)
+                ]
+                essential_info['transactions_count'] = len(filtered_transactions)
+                essential_info['transactions'] = filtered_transactions[:10]  # Limit to first 10 transactions
+                if len(filtered_transactions) > 10:
+                    essential_info['note'] = f"Showing first 10 of {len(filtered_transactions)} transactions in time period"
+            
             return [TextContent(
                 type="text",
-                text=f"Budget Details: {result['data']['budget']}"
+                text=f"Budget Details: {essential_info}"
             )]
         finally:
             await client.close()
