@@ -1,0 +1,7 @@
+[tools]
+python = "3.11.0"
+uv = "latest"
+
+[env]
+PYTHON_VENV_NAME = ".venv"
+UV_SYSTEM_PYTHON = "true"
