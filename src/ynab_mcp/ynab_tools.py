@@ -20,7 +20,7 @@ class GetUserInfoTool():
     def get_tool_description(self) -> Tool:
         return Tool(
             name=self.name,
-            description="User info",
+            description="Retrieves information about the authenticated YNAB user, including user ID and email.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -47,7 +47,7 @@ class ListBudgetsTool():
     def get_tool_description(self) -> Tool:
         return Tool(
             name=self.name,
-            description="List budgets",
+            description="Lists all budgets accessible to the authenticated user, including budget IDs and names.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -73,7 +73,7 @@ class GetBudgetTool():
     def get_tool_description(self) -> Tool:
         return Tool(
             name=self.name,
-            description="Get budget. The API returns monetary amounts in milliunits",
+            description="Retrieves detailed information about a specific budget, including transactions, categories, and balances. The API returns monetary amounts in milliunits (e.g., 1000 = $1.00). Supports optional date filtering and transaction limiting.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -142,7 +142,7 @@ class GetBudgetCategoriesTool():
     def get_tool_description(self) -> Tool:
         return Tool(
             name=self.name,
-            description="Get categories",
+            description="Retrieves all categories defined in the specified budget, including category groups, names, and IDs.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -180,7 +180,7 @@ class GetBudgetSettingsTool():
     def get_tool_description(self) -> Tool:
         return Tool(
             name=self.name,
-            description="Get budget settings",
+            description="Retrieves settings for the specified budget, including currency format, date format, and other preferences.",
             inputSchema={
                 "type": "object",
                 "properties": {
