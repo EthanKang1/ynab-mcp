@@ -107,7 +107,8 @@ class GetBudgetTool():
                 'id': budget['id'],
                 'name': budget['name'],
                 'currency_format': budget.get('currency_format', {}),
-                'time_period': f"{start_date or 'start'} to {end_date or 'end'}"
+                'time_period': f"{start_date or 'start'} to {end_date or 'end'}",
+                'categories': budget.get('categories', {})
             }
             
             # Client-side time filtering of transactions
