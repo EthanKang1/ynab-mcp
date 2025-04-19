@@ -129,6 +129,44 @@ class GetBudgetTool():
             )]
         finally:
             await client.close()
+
+class GetBudgetCategoriesTool():
+    def __init__(self):
+        self.name = "GetBudgetCategories"
+
+    def get_tool_description(self) -> Tool:
+        return Tool(
+            name=self.name,
+            description="Get categories",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "budget_id": {
+                        "type": "string",
+                        "description": "The ID of the budget to fetch"
+                    }
+                },
+                "required": ["budget_id"]
+            },
+        )
+    
+    async def call(self, budget_id: str) -> list[TextContent]:
+        await client.connect()
+        try: 
+            result = await client.get_budget(budget_id)
+            budget = result['data']['budget']
+            
+            # Extract essential info
+            essential_info = {
+                'categories': budget.get('categories', {})
+            }
+            
+            return [TextContent(
+                type="text",
+                text=f"Budget Details: {essential_info}"
+            )]
+        finally:
+            await client.close()
     
 class GetBudgetSettingsTool():
     def __init__(self):
@@ -165,7 +203,11 @@ class GetBudgetSettingsTool():
 
 
 def generate_available_tools():
-    tools = [GetUserInfoTool(), ListBudgetsTool(), GetBudgetTool(), GetBudgetSettingsTool()]
+    tools = [GetUserInfoTool(), 
+             ListBudgetsTool(), 
+             GetBudgetTool(),
+             GetBudgetCategoriesTool(), 
+             GetBudgetSettingsTool()]
     return dict((tool.name, tool) for tool in tools)
 
 tools = generate_available_tools()
