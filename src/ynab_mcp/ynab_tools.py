@@ -73,7 +73,7 @@ class GetBudgetTool():
     def get_tool_description(self) -> Tool:
         return Tool(
             name=self.name,
-            description="Get budget",
+            description="Get budget. The API returns monetary amounts in milliunits",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -90,13 +90,18 @@ class GetBudgetTool():
                         "type": "string",
                         "description": "End date in YYYY-MM-DD format (client-side filter)",
                         "default": "current_month_end"
+                    },
+                    "max_transactions": {
+                        "type": "number",
+                        "description": "Number of transactions to return",
+                        "default": "10"
                     }
                 },
                 "required": ["budget_id"]
             },
         )
     
-    async def call(self, budget_id: str, start_date: Optional[str] = None, end_date: Optional[str] = None) -> list[TextContent]:
+    async def call(self, budget_id: str, start_date: Optional[str] = None, end_date: Optional[str] = None, max_transactions: int = 10) -> list[TextContent]:
         await client.connect()
         try:
             result = await client.get_budget(budget_id)
@@ -119,9 +124,9 @@ class GetBudgetTool():
                        (not end_date or t['date'] <= end_date)
                 ]
                 essential_info['transactions_count'] = len(filtered_transactions)
-                essential_info['transactions'] = filtered_transactions[:10]  # Limit to first 10 transactions
-                if len(filtered_transactions) > 10:
-                    essential_info['note'] = f"Showing first 10 of {len(filtered_transactions)} transactions in time period"
+                essential_info['transactions'] = filtered_transactions[:max_transactions]
+                if len(filtered_transactions) > max_transactions:
+                    essential_info['note'] = f"Showing first {max_transactions} of {len(filtered_transactions)} transactions in time period"
             
             return [TextContent(
                 type="text",
