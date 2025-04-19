@@ -1,5 +1,7 @@
 import asyncio
 
+import os
+
 import logging
 from mcp.server.models import InitializationOptions
 import mcp.types as types
@@ -12,6 +14,11 @@ from . import ynab_tools
 # Configure logging
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger("ynab-mcp")
+
+# Get YNAB API key
+api_key = os.getenv("YNAB_API_KEY")
+if not api_key:
+    raise ValueError(f"YNAB_API_KEY environment variable required. Working directory: {os.getcwd()}")
 
 # Store notes as a simple key-value dict to demonstrate state management
 notes: dict[str, str] = {}
@@ -129,7 +136,9 @@ async def handle_call_tool(
         raise ValueError(f"Unknown tool: {name}")
     
     try:
-        return tool.call()
+        if arguments:
+            return await tool.call(**arguments)
+        return await tool.call()
     except Exception as e:
         logger.error(str(e))
         raise RuntimeError(f"Caught Exception. Error: {str(e)}")
