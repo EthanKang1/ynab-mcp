@@ -1,5 +1,7 @@
 # YNAB MCP Server
 
+[![smithery badge](https://smithery.ai/badge/@EthanKang1/ynab-mcp)](https://smithery.ai/server/@EthanKang1/ynab-mcp)
+
 A Model Context Protocol (MCP) server for interacting with YNAB (You Need A Budget). Provides tools for accessing budget data through MCP-enabled clients like Claude Desktop.
 
 ## MCP Client Configuration
